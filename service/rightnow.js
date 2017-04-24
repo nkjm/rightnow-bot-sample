@@ -82,7 +82,7 @@ module.exports = class RightNow {
                                             LabelText:"LGBT",
                                         }]
                                     }
-                                ]}
+                                }]
                             }
                         }, function(err, result){
                             if (err){
