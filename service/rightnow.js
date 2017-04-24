@@ -73,14 +73,7 @@ module.exports = class RightNow {
                             Filters: {
                                 ContentFilterList: [{
                                     ServiceProduct: {
-                                        Names: [{
-                                            Language:{
-                                                ID: {
-                                                    id: "ja"
-                                                }
-                                            },
-                                            LabelText:"LGBT",
-                                        }]
+                                        Names: "LGBT"
                                     }
                                 }]
                             }
