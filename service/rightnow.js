@@ -11,7 +11,7 @@ const RN_USER = app_env.RN_USER;
 const RN_PASSWORD = app_env.RN_PASSWORD;
 const RN_HOSTNAME = app_env.RN_HOSTNAME;
 const RN_WSDL = app_env.RN_WSDL;
-const SOAP_WSS_SECURITY = new soap.WSSecurity(RN_USER, RN_PASSWORD, {hasTimeStamp: false,hasTokenCreated : false});
+const SOAP_WSS_SECURITY = new soap.WSSecurity(RN_USER, RN_PASSWORD, {hasTimeStamp: false, hasTokenCreated: false});
 const APP_API_ID = 'KF Operations';
 const APP_IP_ADDRESS = '10.0.0.0';
 
@@ -69,7 +69,19 @@ module.exports = class RightNow {
                             SessionToken: session_token,
                             Body: question,
                             Subject: question,
-                            Limit: 1
+                            Limit: 1,
+                            Filters: [{
+                                ServiceProduct: {
+                                    Names: [{
+                                        Language:{
+                                            ID: {
+                                                id: "ja"
+                                            }
+                                        },
+                                        LabelText:"LGBT",
+                                    }]
+                                }
+                            }]
                         }, function(err, result){
                             if (err){
                                 debug("Failed to serach.");
