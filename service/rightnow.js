@@ -70,22 +70,26 @@ module.exports = class RightNow {
                             Body: question,
                             Subject: question,
                             Limit: 1,
-                            Filters: [{
-                                ServiceProduct: {
-                                    Names: [{
-                                        Language:{
-                                            ID: {
-                                                id: "ja"
-                                            }
-                                        },
-                                        LabelText:"LGBT",
-                                    }]
-                                }
-                            }]
+                            Filters: {
+                                ContentFilterList: [{
+                                    ServiceProduct: {
+                                        Names: [{
+                                            Language:{
+                                                ID: {
+                                                    id: "ja"
+                                                }
+                                            },
+                                            LabelText:"LGBT",
+                                        }]
+                                    }
+                                ]}
+                            }
                         }, function(err, result){
                             if (err){
                                 debug("Failed to serach.");
-                                reject(err);
+                                debug(err);
+                                debug(result);
+                                return reject(err);
                             }
 
                             if (result.ContentListResponse.SummaryContents && result.ContentListResponse.SummaryContents.SummaryContentList){
