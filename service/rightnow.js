@@ -71,11 +71,11 @@ module.exports = class RightNow {
                             Subject: question,
                             Limit: 1,
                             Filters: {
-                                ContentFilterList: {
+                                ContentFilterList: [{
                                     ServiceProduct: {
                                         Name: "LGBT"
                                     }
-                                }
+                                }]
                             }
                         }, function(err, result){
                             if (err){
