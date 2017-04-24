@@ -24,6 +24,7 @@ module.exports = class SkillFaq {
                 return bot.reply(bot_event, messages);
             },
             (response) => {
+                debug(response);
                 return Promise.reject("Failed to get answer from rightnow.");
             }
         );
