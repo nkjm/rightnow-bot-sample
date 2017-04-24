@@ -70,13 +70,13 @@ module.exports = class RightNow {
                             Body: question,
                             Subject: question,
                             Limit: 1,
-                            Filters: [{
+                            Filters: {
                                 ContentFilterList: [{
                                     ServiceProduct: {
                                         Name: "LGBT"
                                     }
                                 }]
-                            }]
+                            }
                         }, function(err, result){
                             if (err){
                                 debug("Failed to serach.");
