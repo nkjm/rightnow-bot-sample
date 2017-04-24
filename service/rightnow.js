@@ -69,14 +69,7 @@ module.exports = class RightNow {
                             SessionToken: session_token,
                             Body: question,
                             Subject: question,
-                            Limit: 1,
-                            Filters: {
-                                ContentFilterList: [{
-                                    ServiceProduct: {
-                                        Name: "LGBT"
-                                    }
-                                }]
-                            }
+                            Limit: 1
                         }, function(err, result){
                             if (err){
                                 debug("Failed to serach.");
