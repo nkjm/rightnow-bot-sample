@@ -9,7 +9,7 @@ module.exports = class SkillFaq {
 
     finish(bot, bot_event, context){
         let message_text = bot.extract_message_text(bot_event);
-        return rightnow.search_answer(message_text).then(
+        return rightnow.search_answer(message_text, "LGBT").then(
             (response) => {
                 let messages;
                 if (!response || !response.solution){

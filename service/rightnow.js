@@ -16,7 +16,7 @@ const APP_API_ID = 'KF Operations';
 const APP_IP_ADDRESS = '10.0.0.0';
 
 module.exports = class RightNow {
-    static search_answer(question){
+    static search_answer(question, product = null, category = null){
         return new Promise((resolve, reject) => {
 
             let client = memory.get("rn_soap_client");
@@ -65,19 +65,38 @@ module.exports = class RightNow {
                         debug("Interaction started.");
                         session_token = result.SessionToken;
                         debug("Going to search '" + question + "'");
-                        client.GetSmartAssistantSearch({
+
+                        /*
+                         * Following smart_assistant_search_msg is very sensitive and the order of setting property is critical factor to make api call succeed. DO NOT CHANGE the order of setting properties.
+                         */
+                        let smart_assistant_search_msg = {
                             SessionToken: session_token,
                             Body: question,
-                            Subject: question,
-                            Limit: 1,
-                            Filters: {
-                                ContentFilterList: [{
-                                    ServiceProduct: {
-                                        Name: "LGBT"
+                            Subject: question
+                        }
+                        if (product || category){
+                            smart_assistant_search_msg.ContentSearch = {
+                                Filters: [{
+                                    ContentFilterList: {
+                                        ContentFilter: {}
                                     }
                                 }]
                             }
-                        }, function(err, result){
+                        }
+                        if (product){
+                            smart_assistant_search_msg.ContentSearch.Filters[0].ContentFilterList.ContentFilter.ServiceProduct = {
+                                Name: product
+                            }
+                        }
+                        if (category){
+                            smart_assistant_search_msg.ContentSearch.Filters[0].ContentFilterList.ContentFilter.ServiceCategory = {
+                                Name: category
+                            }
+                        }
+                        smart_assistant_search_msg.Limit = 1;
+                        debug(smart_assistant_search_msg);
+
+                        client.GetSmartAssistantSearch(smart_assistant_search_msg, function(err, result){
                             if (err){
                                 debug("Failed to serach.");
                                 debug(err);
