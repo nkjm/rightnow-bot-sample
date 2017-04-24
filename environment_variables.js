@@ -1,0 +1,12 @@
+exports.LINE_CHANNEL_ID = process.env.LINE_CHANNEL_ID;
+exports.LINE_CHANNEL_SECRET = process.env.LINE_CHANNEL_SECRET;
+exports.LINE_CHANNEL_ACCESS_TOKEN = process.env.LINE_CHANNEL_ACCESS_TOKEN;
+exports.APIAI_CLIENT_ACCESS_TOKEN = process.env.APIAI_CLIENT_ACCESS_TOKEN;
+exports.RN_USER = process.env.RN_USER;
+exports.RN_PASSWORD = process.env.RN_PASSWORD;
+exports.RN_HOSTNAME = process.env.RN_HOSTNAME;
+exports.RN_WSDL = process.env.RN_WSDL;
+exports.MEMORY_RETENTION = process.env.MEMORY_RETENTION;
+exports.FACEBOOK_APP_SECRET = process.env.FACEBOOK_APP_SECRET;
+exports.FACEBOOK_PAGE_ACCESS_TOKEN = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+exports.ORACLE_WORKSPACE = process.env.ORACLE_WORKSPACE;
