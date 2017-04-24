@@ -87,7 +87,7 @@ module.exports = class RightNow {
                                 }
 
                                 // Get full content using content id.
-                                let url = "https://" + RN_USER + ":" + RN_PASSWORD + "@" + RN_HOSTNAME + "/services/rest/connect/latest/answers/" + content_id;
+                                let url = "https://" + encodeURIComponent(RN_USER) + ":" + encodeURIComponent(RN_PASSWORD) + "@" + RN_HOSTNAME + "/services/rest/connect/latest/answers/" + content_id;
                                 let headers = {
                                     "Content-Type": "application/json"
                                 }
