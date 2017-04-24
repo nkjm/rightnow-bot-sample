@@ -1,5 +1,5 @@
 {
-  "name": "lgbt",
+  "name": "LGBT-Father",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -7,8 +7,10 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
-    "bot-express": "0.0.35"
+    "bluebird": "^3.5.0",
+    "bot-express": "0.0.35",
+    "striptags": "^3.0.1"
   }
 }
