@@ -12,13 +12,13 @@ module.exports = class SkillFaq {
         return rightnow.search_answer(message_text, "LGBT").then(
             (response) => {
                 let messages;
-                if (!response || !response.solution){
+                if (!response || !response.Solution){
                     messages = [{
                         text: "ごめんなさい、ちょっと分かりませんでした。"
                     }];
                 } else {
                     messages = [{
-                        text: striptags(response.solution)
+                        text: striptags(response.Solution)
                     }];
                 }
                 return bot.reply(bot_event, messages);

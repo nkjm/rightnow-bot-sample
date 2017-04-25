@@ -1,5 +1,6 @@
 'use strict';
 
+//let soap = require("strong-soap").soap;
 let soap = require("soap");
 let memory = require("memory-cache");
 let request = require('request');
@@ -12,7 +13,7 @@ const RN_PASSWORD = app_env.RN_PASSWORD;
 const RN_HOSTNAME = app_env.RN_HOSTNAME;
 const RN_WSDL = app_env.RN_WSDL;
 const SOAP_WSS_SECURITY = new soap.WSSecurity(RN_USER, RN_PASSWORD, {hasTimeStamp: false, hasTokenCreated: false});
-const APP_API_ID = 'KF Operations';
+const APP_API_ID = 'lgbt-father';
 const APP_IP_ADDRESS = '10.0.0.0';
 
 module.exports = class RightNow {
@@ -35,10 +36,12 @@ module.exports = class RightNow {
                         debug("Rightnow soap client created.");
 
                         client.setSecurity(SOAP_WSS_SECURITY);
-                        client.addSoapHeader({
-                            ClientInfoHeader: {
-                                AppID : APP_API_ID
-                            }},         //soapHeader Object({rootName: {name: "value"}}) or strict xml-string
+                        client.addSoapHeader(
+                            {
+                                ClientInfoHeader: {
+                                    AppID : APP_API_ID
+                                }
+                            },         //soapHeader Object({rootName: {name: "value"}}) or strict xml-string
                             '',         //name Unknown parameter (it could just a empty string)
                             'rnm_v1',   //namespace prefix of xml namespace
                             ''          //xmlns URI
@@ -64,11 +67,8 @@ module.exports = class RightNow {
                         }
                         debug("Interaction started.");
                         session_token = result.SessionToken;
-                        debug("Going to search '" + question + "'");
+                        debug(`Interaction Id: ${session_token}`);
 
-                        /*
-                         * Following smart_assistant_search_msg is very sensitive and the order of setting property is critical factor to make api call succeed. DO NOT CHANGE the order of setting properties.
-                         */
                         let smart_assistant_search_msg = {
                             SessionToken: session_token,
                             Body: question,
@@ -76,26 +76,33 @@ module.exports = class RightNow {
                         }
                         if (product || category){
                             smart_assistant_search_msg.ContentSearch = {
-                                Filters: [{
-                                    ContentFilterList: {
-                                        ContentFilter: {}
-                                    }
-                                }]
-                            }
+                                "$xml":""
+                            };
                         }
                         if (product){
-                            smart_assistant_search_msg.ContentSearch.Filters[0].ContentFilterList.ContentFilter.ServiceProduct = {
-                                Name: product
-                            }
+                            smart_assistant_search_msg.ContentSearch["$xml"] = `
+                                <Filters xmlns="urn:knowledge.ws.rightnow.com/v1">
+                                    <ContentFilterList xsi:type="ServiceProductContentFilter">
+                                        <ServiceProduct>
+                                            <Name xmlns="urn:base.ws.rightnow.com/v1">${product}</Name>
+                                        </ServiceProduct>
+                                    </ContentFilterList>
+                                </Filters>`;
                         }
                         if (category){
-                            smart_assistant_search_msg.ContentSearch.Filters[0].ContentFilterList.ContentFilter.ServiceCategory = {
-                                Name: category
-                            }
+                            smart_assistant_search_msg.ContentSearch["$xml"] += `
+                                <Filters xmlns="urn:knowledge.ws.rightnow.com/v1">
+                                    <ContentFilterList xsi:type="ServiceCategoryContentFilter">
+                                        <ServiceCategory>
+                                            <Name xmlns="urn:base.ws.rightnow.com/v1">${category}</Name>
+                                        </ServiceCategory>
+                                    </ContentFilterList>
+                                </Filters>`;
                         }
                         smart_assistant_search_msg.Limit = 1;
-                        debug(smart_assistant_search_msg);
 
+                        debug("Going to perform GetSmartAssistantSearch. smart_assistant_search_msg is following.");
+                        debug(smart_assistant_search_msg);
                         client.GetSmartAssistantSearch(smart_assistant_search_msg, function(err, result){
                             if (err){
                                 debug("Failed to serach.");
@@ -106,6 +113,9 @@ module.exports = class RightNow {
                             if (result.ContentListResponse.SummaryContents && result.ContentListResponse.SummaryContents.SummaryContentList){
                                 debug("Got contents.");
 
+                                // FOR TEST
+                                //return resolve(result.ContentListResponse);
+
                                 let content_id;
                                 if(result.ContentListResponse.SummaryContents.SummaryContentList.length > 0){
                                     content_id = result.ContentListResponse.SummaryContents.SummaryContentList[0].ID.attributes.id;
@@ -113,22 +123,60 @@ module.exports = class RightNow {
                                     content_id = result.ContentListResponse.SummaryContents.SummaryContentList.ID.attributes.id;
                                 }
 
-                                // Get full content using content id.
-                                let url = "https://" + encodeURIComponent(RN_USER) + ":" + encodeURIComponent(RN_PASSWORD) + "@" + RN_HOSTNAME + "/services/rest/connect/latest/answers/" + content_id;
-                                let headers = {
-                                    "Content-Type": "application/json"
+                                let content_msg = {
+                                    "$xml": `
+                                        <SessionToken>${session_token}</SessionToken>
+                                        <ContentTemplate xmlns:q1="urn:knowledge.ws.rightnow.com/v1" xsi:type="q1:AnswerContent">
+                                            <ID xmlns="urn:base.ws.rightnow.com/v1" id="${content_id}"/>
+                                            <q1:Categories xsi:nil="true"/>
+                                            <q1:CommonAttachments xsi:nil="true"/>
+                                            <q1:FileAttachments xsi:nil="true"/>
+                                            <q1:Keywords xsi:nil="true"/>
+                                            <q1:Products xsi:nil="true"/>
+                                            <q1:Question xsi:nil="true"/>
+                                            <q1:Solution xsi:nil="true"/>
+                                            <q1:ValidNullFields xsi:nil="true"/>
+                                        </ContentTemplate>`
                                 }
-                                debug("Getting full content of " + content_id + ".");
-                                request({
-                                    method: "GET",
-                                    url: url,
-                                    headers: headers,
-                                    json: true
-                                }, function (error, response, body) {
-                                    if (error){
-                                        reject(error);
+
+                                debug("Getting full content.");
+                                client.GetContent(content_msg, function(err, result){
+                                    if (err){
+                                        debug("Failed to get content.");
+                                        debug(err);
+                                        return reject(err);
                                     }
-                                    resolve(body);
+                                    let content;
+                                    if (result.Content){
+                                        debug("Got following full content.");
+                                        debug(result.Content);
+                                        content = result.Content;
+                                    }
+                                    if (product){
+                                        let found = false;
+                                        for (let NamedIDHierarchy of content.Products.NamedIDHierarchyList){
+                                            if (NamedIDHierarchy.Name == product){
+                                                found = true;
+                                            }
+                                        }
+                                        if (!found){
+                                            debug(`Got full content but product does not match.`);
+                                            content = null;
+                                        }
+                                    }
+                                    if (category){
+                                        let found = false;
+                                        for (let NamedIDHierarchy of content.Categories.NamedIDHierarchyList){
+                                            if (NamedIDHierarchy.Name == category){
+                                                found = true;
+                                            }
+                                        }
+                                        if (!found){
+                                            debug(`Got full content but category does not match.`);
+                                            content = null;
+                                        }
+                                    }
+                                    return resolve(content);
                                 });
                             } else {
                                 // Contents not found.
