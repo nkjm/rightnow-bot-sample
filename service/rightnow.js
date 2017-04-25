@@ -74,6 +74,11 @@ module.exports = class RightNow {
                             Body: question,
                             Subject: question
                         }
+
+                        /*
+                           If user specify product or category, we set corresponding filter.
+                           BUT!!! At present, it seems this content filter is not working. So we filter the result after GetContent().
+                        */
                         if (product || category){
                             smart_assistant_search_msg.ContentSearch = {
                                 "$xml":""

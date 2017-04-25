@@ -1,18 +1,17 @@
 {
-  "name": "LGBT-Father",
+  "name": "rightnow-bot-sample",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Kazuki Nakajima",
   "license": "MIT",
   "dependencies": {
     "bluebird": "^3.5.0",
     "bot-express": "0.0.35",
     "soap": "^0.19.0",
-    "striptags": "^3.0.1",
-    "strong-soap": "^1.2.3"
+    "striptags": "^3.0.1"
   }
 }
